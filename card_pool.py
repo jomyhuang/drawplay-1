@@ -14,12 +14,13 @@ class CardPool:
         self._generate_card_packs()
     
     def _generate_cards(self):
+        """生成卡片池"""
         rarities = {
-            'R': 30,
-            'SR': 30,
-            'SSR': 20,
-            'AR': 10,
-            'BP': 10
+            'R': 30,    # 30%
+            'SR': 30,   # 30%
+            'SSR': 20,  # 20%
+            'AR': 10,   # 10%
+            'BP': 10    # 10%
         }
         
         card_id = 1

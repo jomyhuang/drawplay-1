@@ -10,6 +10,7 @@
 1. 基于Python 3实现
 2. 采用面向对象编程思想
 3. 模块化设计，代码结构清晰
+4. GUI与CLI两种交互方式保持输出结果一致
 
 系统设计：
 1. 卡牌系统
@@ -51,5 +52,32 @@
 - main.py：程序入口
 - card_pool.py：卡池管理模块
 - card_draw.py：抽卡系统模块
+- tests/：单元测试目录
+  - test_card_draw.py：抽卡系统测试
+  - __init__.py：测试包初始化文件
+
+测试说明：
+1. 安装测试依赖：
+   ```bash
+   python -m pip install pytest pytest-cov
+   ```
+
+2. 运行测试：
+   - 使用 unittest（Python内置模块）：
+     ```bash
+     python -m unittest tests/test_card_draw.py
+     ```
+   - 使用 pytest（需要先安装）：
+     ```bash
+     python -m pytest --cov=. tests/
+     ```
+
+3. 测试覆盖范围：
+   - 单次抽卡功能
+   - 连续抽卡功能
+   - 特殊卡片概率验证
+   - 卡池耗尽处理
+   - 统计报告功能
+   - 卡片稀有度分布
 
 

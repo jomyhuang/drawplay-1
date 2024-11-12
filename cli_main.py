@@ -38,11 +38,17 @@ def main():
 已抽取卡包数: {stats['drawn']}
 剩余卡包数: {stats['remaining']}
 
-卡包类型分布:
-普通包(无特殊卡): {stats['normal']} 包 ({stats['normal_percent']:.1f}%)
-AR包(含AR卡):    {stats['ar']} 包 ({stats['ar_percent']:.1f}%)
-BP包(含BP卡):    {stats['bp']} 包 ({stats['bp_percent']:.1f}%)
-其他组合:        {stats['other']} 包 ({stats['other_percent']:.1f}%)
+剩余卡包类型分布:
+普通包(无特殊卡): {stats['remaining_normal']} 包 ({stats['remaining_normal_percent']:.1f}%)
+AR包(含AR卡):    {stats['remaining_ar']} 包 ({stats['remaining_ar_percent']:.1f}%)
+BP包(含BP卡):    {stats['remaining_bp']} 包 ({stats['remaining_bp_percent']:.1f}%)
+其他组合:        {stats['remaining_other']} 包 ({stats['remaining_other_percent']:.1f}%)
+
+已抽取卡包类型分布:
+普通包(无特殊卡): {stats['drawn_normal']} 包 ({stats['drawn_normal_percent']:.1f}%)
+AR包(含AR卡):    {stats['drawn_ar']} 包 ({stats['drawn_ar_percent']:.1f}%)
+BP包(含BP卡):    {stats['drawn_bp']} 包 ({stats['drawn_bp_percent']:.1f}%)
+其他组合:        {stats['drawn_other']} 包 ({stats['drawn_other_percent']:.1f}%)
 """)
         
         elif choice == '4':

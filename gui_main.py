@@ -91,24 +91,43 @@ class CardDrawGUI:
         self.result_text.see(tk.END)
         
     def show_stats(self):
-        #try:
-            self.stats_text.delete(1.0, tk.END)
-            # 获取统计信息字符串
-            stats = self.system.generate_report()
-            stats_text = f"""=== 卡池分布报表 ===
+        stats = self.system.generate_report()
+        stats_window = tk.Toplevel(self.root)
+        stats_window.title("统计报表")
+        stats_window.geometry("400x500")
+        
+        # 使用Text组件显示统计信息
+        text_widget = tk.Text(stats_window, wrap=tk.WORD, padx=10, pady=10)
+        text_widget.pack(fill=tk.BOTH, expand=True)
+        
+        stats_text = f"""
+=== 卡池分布报表 ===
 卡池总卡包数: {stats['total']}
 已抽取卡包数: {stats['drawn']}
 剩余卡包数: {stats['remaining']}
 
-卡包类型分布:
-普通包(无特殊卡): {stats['normal']} 包 ({stats['normal_percent']:.1f}%)
-AR包(含AR卡):    {stats['ar']} 包 ({stats['ar_percent']:.1f}%)
-BP包(含BP卡):    {stats['bp']} 包 ({stats['bp_percent']:.1f}%)
-其他组合:        {stats['other']} 包 ({stats['other_percent']:.1f}%)"""
-            
-            self.stats_text.insert(tk.END, stats_text)
-        #except Exception as e:
-        #    messagebox.showerror("错误", f"显示统计信息时出错：{str(e)}")
+剩余卡包类型分布:
+普通包(无特殊卡): {stats['remaining_normal']} 包 ({stats['remaining_normal_percent']:.1f}%)
+AR包(含AR卡):    {stats['remaining_ar']} 包 ({stats['remaining_ar_percent']:.1f}%)
+BP包(含BP卡):    {stats['remaining_bp']} 包 ({stats['remaining_bp_percent']:.1f}%)
+其他组合:        {stats['remaining_other']} 包 ({stats['remaining_other_percent']:.1f}%)
+
+已抽取卡包类型分布:
+普通包(无特殊卡): {stats['drawn_normal']} 包 ({stats['drawn_normal_percent']:.1f}%)
+AR包(含AR卡):    {stats['drawn_ar']} 包 ({stats['drawn_ar_percent']:.1f}%)
+BP包(含BP卡):    {stats['drawn_bp']} 包 ({stats['drawn_bp_percent']:.1f}%)
+其他组合:        {stats['drawn_other']} 包 ({stats['drawn_other_percent']:.1f}%)
+"""
+        
+        text_widget.insert('1.0', stats_text)
+        text_widget.config(state='disabled')  # 设置为只读
+        
+        # 添加关闭按钮
+        tk.Button(
+            stats_window, 
+            text="关闭", 
+            command=stats_window.destroy
+        ).pack(pady=10)
 
 def main():
     root = tk.Tk()

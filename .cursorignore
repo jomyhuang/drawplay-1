@@ -1,0 +1,21 @@
+# 忽略所有测试文件夹
+tests/
+
+# 忽略所有缓存文件夹
+__pycache__/
+.pytest_cache/
+
+# 忽略所有虚拟环境文件夹
+venv/
+env/
+.env/
+fix01/
+
+# 忽略特定文件类型
+*.pyc
+*.pyo
+*.pyd
+
+# 忽略特定文件
+.coverage
+.DS_Store 
