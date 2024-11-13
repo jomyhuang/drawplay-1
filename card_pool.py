@@ -1,13 +1,13 @@
 import random
 from datetime import datetime
-
-class Card:
-    def __init__(self, id, rarity):
-        self.id = id
-        self.rarity = rarity
+from config import PackConfig
+from card import Card
 
 class CardPool:
-    def __init__(self):
+    def __init__(self, config: PackConfig = None):
+        if config is None:
+            config = PackConfig()
+        self.config = config
         self.cards = []
         self.card_packs = []
         self._generate_cards()
@@ -15,55 +15,62 @@ class CardPool:
     
     def _generate_cards(self):
         """生成卡片池"""
-        rarities = {
-            'R': 30,    # 30%
-            'SR': 30,   # 30%
-            'SSR': 20,  # 20%
-            'AR': 10,   # 10%
-            'BP': 10    # 10%
-        }
-        
         card_id = 1
-        for rarity, count in rarities.items():
+        total_cards = self.config.total_packs * self.config.cards_per_pack * 1.2  # 生成120%的卡片数量
+        
+        for rarity, rate in self.config.rarity_rates.items():
+            count = int(total_cards * rate)
             for _ in range(count):
                 self.cards.append(Card(card_id, rarity))
                 card_id += 1
     
-    def _is_special_card(self, card):
-        return card.rarity in ['AR', 'BP']
-    
     def _generate_card_packs(self):
-        # 将卡片按稀有度分类
-        normal_cards = [card for card in self.cards if not self._is_special_card(card)]
-        special_cards = [card for card in self.cards if self._is_special_card(card)]
-        
+        """生成卡包"""
         pack_id = 1
+        cards_by_rarity = self._classify_cards()
         
-        while len(normal_cards) >= 5:  # 确保有足够的普通卡
-            pack_cards = []
-            
-            # 先选择5张普通卡
-            selected_normal = random.sample(normal_cards, 5)
-            for card in selected_normal:
-                normal_cards.remove(card)
-                pack_cards.append(card)
-            
-            # 如果还有特殊卡，50%概率用一张特殊卡替换一张普通卡
-            if special_cards and random.random() < 0.5:
-                special_card = random.choice(special_cards)
-                special_cards.remove(special_card)
+        # 根据配置的包型概率生成卡包
+        remaining_packs = self.config.total_packs
+        for pack_type, rate in self.config.pack_type_rates.items():
+            pack_count = int(self.config.total_packs * rate)
+            if pack_type == list(self.config.pack_type_rates.keys())[-1]:
+                pack_count = remaining_packs  # 最后一种包型补齐剩余数量
                 
-                # 随机替换一张普通卡
-                replace_index = random.randint(0, 4)
-                removed_card = pack_cards[replace_index]
-                pack_cards[replace_index] = special_card
-                # 将被替换的普通卡放回池子
-                normal_cards.append(removed_card)
-            
-            self.card_packs.append({
-                'pack_id': pack_id,
-                'cards': pack_cards,
-                'created_time': datetime.now()
-            })
-            pack_id += 1 
-            
+            for _ in range(pack_count):
+                pack = self._create_pack(pack_id, pack_type, cards_by_rarity)
+                if pack:
+                    self.card_packs.append(pack)
+                    pack_id += 1
+                    remaining_packs -= 1
+    
+    def _classify_cards(self):
+        """将卡片按稀有度分类"""
+        cards_by_rarity = {}
+        for rarity in self.config.rarity_rates.keys():
+            cards_by_rarity[rarity] = [
+                card for card in self.cards if card.rarity == rarity
+            ]
+        return cards_by_rarity
+    
+    def _create_pack(self, pack_id: int, pack_type: str, cards_by_rarity):
+        """创建单个卡包"""
+        pack_cards = []
+        pack_config = self.config.pack_types[pack_type]
+        
+        # 按配置的稀有度和数量抽取卡片
+        for rarity, count in pack_config.items():
+            if len(cards_by_rarity[rarity]) < count:
+                return None  # 卡片不足，无法生成卡包
+                
+            selected_cards = random.sample(cards_by_rarity[rarity], count)
+            for card in selected_cards:
+                cards_by_rarity[rarity].remove(card)
+                pack_cards.append(card)
+        
+        return {
+            'pack_id': pack_id,
+            'pack_type': pack_type,
+            'cards': pack_cards,
+            'created_time': datetime.now()
+        }
+    

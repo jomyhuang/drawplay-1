@@ -1,6 +1,8 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 from card_draw import CardDrawSystem
+from datetime import datetime
+from config import PackConfig
 
 class CardDrawGUI:
     def __init__(self, root):
@@ -32,13 +34,15 @@ class CardDrawGUI:
     def create_buttons(self):
         buttons_frame = ttk.Frame(self.main_frame)
         buttons_frame.grid(row=0, column=0, pady=10, sticky="ew")
-        buttons_frame.grid_columnconfigure((0,1,2), weight=1)  # 使按钮均匀分布
+        buttons_frame.grid_columnconfigure((0,1,2,3,4), weight=1)  # 使按钮均匀分布
         
         # 调整按钮样式和大小
         button_style = {'width': 15, 'padding': 5}
         ttk.Button(buttons_frame, text="抽一次", command=self.draw_single, **button_style).grid(row=0, column=0, padx=5)
         ttk.Button(buttons_frame, text="抽五次", command=self.draw_five, **button_style).grid(row=0, column=1, padx=5)
         ttk.Button(buttons_frame, text="查看统计", command=self.show_stats, **button_style).grid(row=0, column=2, padx=5)
+        ttk.Button(buttons_frame, text="查看配置", command=self.show_config, **button_style).grid(row=0, column=3, padx=5)
+        ttk.Button(buttons_frame, text="导出Excel", command=self.export_to_excel, **button_style).grid(row=0, column=4, padx=5)
         
     def create_display_area(self):
         self.display_frame = ttk.LabelFrame(self.main_frame, text="抽卡结果", padding="10")
@@ -87,7 +91,7 @@ class CardDrawGUI:
                 
     def display_pack(self, pack):
         cards_info = ' | '.join([f"{card.rarity}" for card in pack['cards']])
-        self.result_text.insert(tk.END, f"卡包 #{pack['pack_id']} [{cards_info}]\n")
+        self.result_text.insert(tk.END, f"卡包 #{pack['pack_id']} [类型: {pack['pack_type']}] [{cards_info}]\n")
         self.result_text.see(tk.END)
         
     def show_stats(self):
@@ -96,15 +100,22 @@ class CardDrawGUI:
         stats_window.title("统计报表")
         stats_window.geometry("400x500")
         
-        # 使用Text组件显示统计信息
         text_widget = tk.Text(stats_window, wrap=tk.WORD, padx=10, pady=10)
         text_widget.pack(fill=tk.BOTH, expand=True)
+        
+        # 添加卡包类型统计
+        pack_type_stats = self._calculate_pack_type_stats()
         
         stats_text = f"""
 === 卡池分布报表 ===
 卡池总卡包数: {stats['total']}
 已抽取卡包数: {stats['drawn']}
 剩余卡包数: {stats['remaining']}
+
+卡包类型分布:
+A类型卡包: {pack_type_stats['A']} 包 ({pack_type_stats['A_percent']:.1f}%)
+B类型卡包: {pack_type_stats['B']} 包 ({pack_type_stats['B_percent']:.1f}%)
+C类型卡包: {pack_type_stats['C']} 包 ({pack_type_stats['C_percent']:.1f}%)
 
 剩余卡包类型分布:
 普通包(无特殊卡): {stats['remaining_normal']} 包 ({stats['remaining_normal_percent']:.1f}%)
@@ -122,12 +133,93 @@ BP包(含BP卡):    {stats['drawn_bp']} 包 ({stats['drawn_bp_percent']:.1f}%)
         text_widget.insert('1.0', stats_text)
         text_widget.config(state='disabled')  # 设置为只读
         
-        # 添加关闭按钮
         tk.Button(
             stats_window, 
             text="关闭", 
             command=stats_window.destroy
         ).pack(pady=10)
+
+    def _calculate_pack_type_stats(self):
+        """计算卡包类型统计"""
+        all_packs = self.system.card_pool.card_packs
+        total = len(all_packs)
+        if total == 0:
+            return {'A': 0, 'B': 0, 'C': 0, 'A_percent': 0, 'B_percent': 0, 'C_percent': 0}
+        
+        type_counts = {'A': 0, 'B': 0, 'C': 0}
+        for pack in all_packs:
+            type_counts[pack['pack_type']] += 1
+        
+        return {
+            'A': type_counts['A'],
+            'B': type_counts['B'],
+            'C': type_counts['C'],
+            'A_percent': (type_counts['A'] / total * 100),
+            'B_percent': (type_counts['B'] / total * 100),
+            'C_percent': (type_counts['C'] / total * 100)
+        }
+
+    def show_config(self):
+        """显示当前配置信息"""
+        config_window = tk.Toplevel(self.root)
+        config_window.title("当前配置")
+        config_window.geometry("400x500")
+        
+        text_widget = tk.Text(config_window, wrap=tk.WORD, padx=10, pady=10)
+        text_widget.pack(fill=tk.BOTH, expand=True)
+        
+        config = self.system.card_pool.config
+        
+        # 生成稀有度分布文本
+        rarity_text = ""
+        for rarity, rate in config.rarity_rates.items():
+            rarity_text += f"{rarity}: {rate*100:.1f}%\n"
+            
+        # 生成卡包类型配置文本
+        pack_types_text = ""
+        for pack_type, contents in config.pack_types.items():
+            pack_types_text += f"{pack_type}包: {contents}\n"
+            
+        # 生成卡包类型概率文本
+        pack_rates_text = ""
+        for pack_type, rate in config.pack_type_rates.items():
+            pack_rates_text += f"{pack_type}包: {rate*100:.1f}%\n"
+        
+        # 组合所有配置信息
+        config_text = f"""=== 系统配置信息 ===
+
+总卡包数量: {config.total_packs}
+每包卡片数: {config.cards_per_pack}
+
+稀有度分布:
+{rarity_text}
+卡包类型配置:
+{pack_types_text}
+卡包类型概率:
+{pack_rates_text}"""
+        
+        text_widget.insert('1.0', config_text)
+        text_widget.config(state='disabled')  # 设置为只读
+        
+        ttk.Button(
+            config_window,
+            text="关闭",
+            command=config_window.destroy
+        ).pack(pady=10)
+
+    def export_to_excel(self):
+        """导出数据到Excel"""
+        try:
+            filename = filedialog.asksaveasfilename(
+                defaultextension=".xlsx",
+                filetypes=[("Excel files", "*.xlsx")],
+                initialfile=f'card_packs_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+            )
+            if filename:
+                self.system.export_to_excel(filename)
+                messagebox.showinfo("成功", f"数据已导出到：\n{filename}")
+        except Exception as e:
+            messagebox.showerror("错误", f"导出失败：{str(e)}")
 
 def main():
     root = tk.Tk()
