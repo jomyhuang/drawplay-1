@@ -3,6 +3,14 @@ from tkinter import ttk, messagebox, filedialog
 from card_draw import CardDrawSystem
 from datetime import datetime
 from config import PackConfig
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+# 设置中文字体
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置默认字体为黑体
+plt.rcParams['axes.unicode_minus'] = False     # 解决负号显示问题
 
 class CardDrawGUI:
     def __init__(self, root):
@@ -19,7 +27,7 @@ class CardDrawGUI:
         self.main_frame = ttk.Frame(self.root, padding="10")
         self.main_frame.grid(row=0, column=0, sticky="nsew")
         self.main_frame.grid_columnconfigure(0, weight=1)
-        self.main_frame.grid_rowconfigure(1, weight=1)  # 让显示区域可扩展
+        self.main_frame.grid_rowconfigure(1, weight=1)  # 让显示区���可扩展
         self.main_frame.grid_rowconfigure(2, weight=1)  # 让统计区域可扩展
         
         # 创建按钮区域
@@ -96,63 +104,139 @@ class CardDrawGUI:
         self.result_text.see(tk.END)
         
     def show_stats(self):
+        """显示统计报表"""
         stats = self.system.generate_report()
-        # 添加调试信息
-        print("Debug info:")
-        print(f"Total packs in config: {self.system.card_pool.config.total_packs}")
-        print(f"Actual packs in pool: {len(self.system.card_pool.card_packs)}")
         
+        # 创建统计窗口
         stats_window = tk.Toplevel(self.root)
         stats_window.title("统计报表")
-        stats_window.geometry("400x500")
+        stats_window.geometry("800x600")
         
-        text_widget = tk.Text(stats_window, wrap=tk.WORD, padx=10, pady=10)
-        text_widget.pack(fill=tk.BOTH, expand=True)
+        # ��建notebook用于切换不同图表
+        notebook = ttk.Notebook(stats_window)
+        notebook.pack(fill='both', expand=True, padx=5, pady=5)
         
-        # 添加卡包类型统计
-        pack_type_stats = self._calculate_pack_type_stats()
+        # 基本统计标签页
+        basic_frame = ttk.Frame(notebook)
+        notebook.add(basic_frame, text='基本统计')
+        self._create_basic_stats(basic_frame, stats)
         
-        # 简化统计显示，只显示确定存在的数据
-        stats_text = f"""
-=== 卡池分布报表 ===
-卡池总卡包数: {stats.get('total', 0)}
-已抽取卡包数: {stats.get('drawn', 0)}
-剩余卡包数: {stats.get('remaining', 0)}
-
-卡包类型分布:
-A类型卡包: {pack_type_stats['A']} 包 ({pack_type_stats['A_percent']:.1f}%)
-B类型卡包: {pack_type_stats['B']} 包 ({pack_type_stats['B_percent']:.1f}%)
-C类型卡包: {pack_type_stats['C']} 包 ({pack_type_stats['C_percent']:.1f}%)
-"""
+        # 卡包类型分布图表
+        pack_type_frame = ttk.Frame(notebook)
+        notebook.add(pack_type_frame, text='卡包类型分布')
+        self._create_pack_type_chart(pack_type_frame, stats)
         
-        text_widget.insert('1.0', stats_text)
-        text_widget.config(state='disabled')  # 设置为只读
+        # 稀有度分布图表
+        rarity_frame = ttk.Frame(notebook)
+        notebook.add(rarity_frame, text='稀有度分布')
+        self._create_rarity_chart(rarity_frame, stats)
         
-        tk.Button(
-            stats_window, 
-            text="关闭", 
-            command=stats_window.destroy
-        ).pack(pady=10)
-
-    def _calculate_pack_type_stats(self):
-        """计算卡包类型统计"""
-        all_packs = self.system.card_pool.card_packs
-        total = len(all_packs)
-        if total == 0:
-            return {'A': 0, 'B': 0, 'C': 0, 'A_percent': 0, 'B_percent': 0, 'C_percent': 0}
+        # 抽卡历史图表
+        history_frame = ttk.Frame(notebook)
+        notebook.add(history_frame, text='抽卡历史')
+        self._create_history_chart(history_frame, stats)
+    
+    def _create_basic_stats(self, parent, stats):
+        """创建基本统计信息"""
+        # 使用Grid布局
+        info_frame = ttk.LabelFrame(parent, text="基本信息", padding=10)
+        info_frame.pack(fill='x', padx=5, pady=5)
         
-        type_counts = {'A': 0, 'B': 0, 'C': 0}
-        for pack in all_packs:
-            type_counts[pack['pack_type']] += 1
+        labels = [
+            ("总卡包数:", stats['total']),
+            ("已抽取数:", stats['drawn']),
+            ("剩余数量:", stats['remaining']),
+            ("抽取比例:", f"{(stats['drawn']/stats['total']*100):.1f}%" if stats['total'] > 0 else "0%")
+        ]
         
-        return {
-            'A': type_counts['A'],
-            'B': type_counts['B'],
-            'C': type_counts['C'],
-            'A_percent': (type_counts['A'] / total * 100),
-            'B_percent': (type_counts['B'] / total * 100),
-            'C_percent': (type_counts['C'] / total * 100)
-        }
+        for i, (label, value) in enumerate(labels):
+            ttk.Label(info_frame, text=label).grid(row=i, column=0, sticky='e', padx=5, pady=2)
+            ttk.Label(info_frame, text=str(value)).grid(row=i, column=1, sticky='w', padx=5, pady=2)
+    
+    def _create_pack_type_chart(self, parent, stats):
+        """创建卡包类型分布图表"""
+        fig = Figure(figsize=(6, 4))
+        ax = fig.add_subplot(111)
+        
+        # 准备数据
+        types = ['A类型', 'B类型', 'C类型']  # 修改为中文标签
+        values = [stats[f'total_{t}'] for t in 'ABC']
+        colors = ['#FF9999', '#66B2FF', '#99FF99']
+        
+        # 创建饼图
+        ax.pie(values, labels=types, colors=colors, autopct='%1.1f%%', startangle=90)
+        ax.axis('equal')
+        ax.set_title('卡包类型分布')
+        
+        # 添加图表到窗口
+        canvas = FigureCanvasTkAgg(fig, parent)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
+    
+    def _create_rarity_chart(self, parent, stats):
+        """创建稀有度分布图表"""
+        fig = Figure(figsize=(6, 4))
+        ax = fig.add_subplot(111)
+        
+        # 准备数据
+        rarities = ['普通', '稀有', '超稀有', '特殊', '限定']  # 修改为中文标签
+        values = [stats[f'{r}_count'] for r in ['R', 'SR', 'SSR', 'AR', 'BP']]
+        colors = ['#CCCCCC', '#99FF99', '#66B2FF', '#FF99FF', '#FFB366']
+        
+        # 创建柱状图
+        bars = ax.bar(rarities, values, color=colors)
+        ax.set_title('稀有度分布')
+        ax.set_ylabel('数量')
+        
+        # 添加数值标签
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height,
+                   f'{int(height)}',
+                   ha='center', va='bottom')
+        
+        # 添加图表到窗口
+        canvas = FigureCanvasTkAgg(fig, parent)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
+    
+    def _create_history_chart(self, parent, stats):
+        """创建抽卡历史图表"""
+        fig = Figure(figsize=(6, 4))
+        ax = fig.add_subplot(111)
+        
+        # 准备数据
+        drawn_data = [
+            stats['drawn_A'],
+            stats['drawn_B'],
+            stats['drawn_C']
+        ]
+        remaining_data = [
+            stats['remaining_A'],
+            stats['remaining_B'],
+            stats['remaining_C']
+        ]
+        
+        # 设置数据
+        labels = ['A类型包', 'B类型包', 'C类型包']  # 修改为中文标签
+        x = range(len(labels))
+        width = 0.35
+        
+        # 创建堆叠柱状图
+        ax.bar(x, drawn_data, width, label='已抽取', color='#66B2FF')
+        ax.bar(x, remaining_data, width, bottom=drawn_data, label='未抽取', color='#FF9999')
+        
+        # 设置图表
+        ax.set_ylabel('数量')
+        ax.set_title('抽卡历史')
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels)
+        ax.legend()
+        
+        # 添加图表到窗口
+        canvas = FigureCanvasTkAgg(fig, parent)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
 
     def show_config(self):
         """显示当前配置信息"""

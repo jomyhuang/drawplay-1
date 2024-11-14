@@ -1,8 +1,15 @@
-pytest>=7.0.0
-pytest-cov>=4.0.0
+# GUI相关
+matplotlib>=3.7.0
+tkinter
 
+# 数据处理
 pandas>=2.0.0
 openpyxl>=3.0.0
 
+# 测试相关
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# 开发工具
 black>=23.0.0
 flake8>=6.0.0 
