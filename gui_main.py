@@ -34,15 +34,16 @@ class CardDrawGUI:
     def create_buttons(self):
         buttons_frame = ttk.Frame(self.main_frame)
         buttons_frame.grid(row=0, column=0, pady=10, sticky="ew")
-        buttons_frame.grid_columnconfigure((0,1,2,3,4), weight=1)  # 使按钮均匀分布
+        buttons_frame.grid_columnconfigure((0,1,2,3,4,5), weight=1)  # 增加一列
         
         # 调整按钮样式和大小
         button_style = {'width': 15, 'padding': 5}
         ttk.Button(buttons_frame, text="抽一次", command=self.draw_single, **button_style).grid(row=0, column=0, padx=5)
         ttk.Button(buttons_frame, text="抽五次", command=self.draw_five, **button_style).grid(row=0, column=1, padx=5)
-        ttk.Button(buttons_frame, text="查看统计", command=self.show_stats, **button_style).grid(row=0, column=2, padx=5)
-        ttk.Button(buttons_frame, text="查看配置", command=self.show_config, **button_style).grid(row=0, column=3, padx=5)
-        ttk.Button(buttons_frame, text="导出Excel", command=self.export_to_excel, **button_style).grid(row=0, column=4, padx=5)
+        ttk.Button(buttons_frame, text="打乱卡包", command=self.shuffle_packs, **button_style).grid(row=0, column=2, padx=5)
+        ttk.Button(buttons_frame, text="查看统计", command=self.show_stats, **button_style).grid(row=0, column=3, padx=5)
+        ttk.Button(buttons_frame, text="查看配置", command=self.show_config, **button_style).grid(row=0, column=4, padx=5)
+        ttk.Button(buttons_frame, text="导出Excel", command=self.export_to_excel, **button_style).grid(row=0, column=5, padx=5)
         
     def create_display_area(self):
         self.display_frame = ttk.LabelFrame(self.main_frame, text="抽卡结果", padding="10")
@@ -50,7 +51,7 @@ class CardDrawGUI:
         self.display_frame.grid_columnconfigure(0, weight=1)
         self.display_frame.grid_rowconfigure(0, weight=1)
         
-        # ���建文本显示区域和滚动条的容器
+        # 建文本显示区域和滚动条的容器
         text_container = ttk.Frame(self.display_frame)
         text_container.grid(row=0, column=0, sticky="nsew")
         text_container.grid_columnconfigure(0, weight=1)
@@ -214,6 +215,11 @@ C类型卡包: {pack_type_stats['C']} 包 ({pack_type_stats['C_percent']:.1f}%)
                 messagebox.showinfo("成功", f"数据已导出到：\n{filename}")
         except Exception as e:
             messagebox.showerror("错误", f"导出失败：{str(e)}")
+
+    def shuffle_packs(self):
+        """打乱卡包顺序"""
+        remaining = self.system.shuffle_packs()
+        messagebox.showinfo("提示", f"已打乱剩余{remaining}个卡包的顺序")
 
 def main():
     root = tk.Tk()

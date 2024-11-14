@@ -5,9 +5,10 @@ def display_menu():
     print("\n=== 抽卡模拟器 ===")
     print("1. 抽一次")
     print("2. 抽五次")
-    print("3. 查看统计")
-    print("4. 显示配置信息")
-    print("5. 导出Excel")
+    print("3. 打乱卡包")
+    print("4. 查看统计")
+    print("5. 显示配置信息")
+    print("6. 导出Excel")
     print("0. 退出")
     print("================")
 
@@ -71,13 +72,17 @@ def main():
                     break
                     
         elif choice == '3':
+            remaining = system.shuffle_packs()
+            print(f"已打乱剩余{remaining}个卡包的顺序")
+            
+        elif choice == '4':
             stats = system.generate_report()
             display_stats(stats)
             
-        elif choice == '4':
-            display_config(system.config)
-            
         elif choice == '5':
+            display_config(system.card_pool.config)
+            
+        elif choice == '6':
             filename = system.export_to_excel()
             print(f"数据已导出到：{filename}")
             

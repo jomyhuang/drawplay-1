@@ -3,6 +3,7 @@ import tkinter as tk
 import pandas as pd
 from datetime import datetime
 from config import PackConfig
+import random
 
 class CardDrawSystem:
     def __init__(self, config: PackConfig = None):
@@ -26,6 +27,27 @@ class CardDrawSystem:
         self.drawn_packs.append(pack)
         self.drawn_pack_ids.add(pack['pack_id'])
         return pack
+    
+    def shuffle_packs(self):
+        """打乱卡包顺序"""
+        # 获取未抽取的卡包
+        available_packs = [
+            pack for pack in self.card_pool.card_packs 
+            if pack['pack_id'] not in self.drawn_pack_ids
+        ]
+        
+        # 打乱顺序
+        random.shuffle(available_packs)
+        
+        # 更新卡池中的卡包顺序
+        drawn_packs = [
+            pack for pack in self.card_pool.card_packs 
+            if pack['pack_id'] in self.drawn_pack_ids
+        ]
+        
+        self.card_pool.card_packs = drawn_packs + available_packs
+        
+        return len(available_packs)  # 返回剩余可抽取的卡包数量
     
     def generate_report(self):
         """生成统计报告"""
