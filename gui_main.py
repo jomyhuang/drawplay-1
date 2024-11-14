@@ -50,7 +50,7 @@ class CardDrawGUI:
         self.display_frame.grid_columnconfigure(0, weight=1)
         self.display_frame.grid_rowconfigure(0, weight=1)
         
-        # 创建文本显示区域和滚动条的容器
+        # ���建文本显示区域和滚动条的容器
         text_container = ttk.Frame(self.display_frame)
         text_container.grid(row=0, column=0, sticky="nsew")
         text_container.grid_columnconfigure(0, weight=1)
@@ -96,6 +96,11 @@ class CardDrawGUI:
         
     def show_stats(self):
         stats = self.system.generate_report()
+        # 添加调试信息
+        print("Debug info:")
+        print(f"Total packs in config: {self.system.card_pool.config.total_packs}")
+        print(f"Actual packs in pool: {len(self.system.card_pool.card_packs)}")
+        
         stats_window = tk.Toplevel(self.root)
         stats_window.title("统计报表")
         stats_window.geometry("400x500")
@@ -106,28 +111,17 @@ class CardDrawGUI:
         # 添加卡包类型统计
         pack_type_stats = self._calculate_pack_type_stats()
         
+        # 简化统计显示，只显示确定存在的数据
         stats_text = f"""
 === 卡池分布报表 ===
-卡池总卡包数: {stats['total']}
-已抽取卡包数: {stats['drawn']}
-剩余卡包数: {stats['remaining']}
+卡池总卡包数: {stats.get('total', 0)}
+已抽取卡包数: {stats.get('drawn', 0)}
+剩余卡包数: {stats.get('remaining', 0)}
 
 卡包类型分布:
 A类型卡包: {pack_type_stats['A']} 包 ({pack_type_stats['A_percent']:.1f}%)
 B类型卡包: {pack_type_stats['B']} 包 ({pack_type_stats['B_percent']:.1f}%)
 C类型卡包: {pack_type_stats['C']} 包 ({pack_type_stats['C_percent']:.1f}%)
-
-剩余卡包类型分布:
-普通包(无特殊卡): {stats['remaining_normal']} 包 ({stats['remaining_normal_percent']:.1f}%)
-AR包(含AR卡):    {stats['remaining_ar']} 包 ({stats['remaining_ar_percent']:.1f}%)
-BP包(含BP卡):    {stats['remaining_bp']} 包 ({stats['remaining_bp_percent']:.1f}%)
-其他组合:        {stats['remaining_other']} 包 ({stats['remaining_other_percent']:.1f}%)
-
-已抽取卡包类型分布:
-普通包(无特殊卡): {stats['drawn_normal']} 包 ({stats['drawn_normal_percent']:.1f}%)
-AR包(含AR卡):    {stats['drawn_ar']} 包 ({stats['drawn_ar_percent']:.1f}%)
-BP包(含BP卡):    {stats['drawn_bp']} 包 ({stats['drawn_bp_percent']:.1f}%)
-其他组合:        {stats['drawn_other']} 包 ({stats['drawn_other_percent']:.1f}%)
 """
         
         text_widget.insert('1.0', stats_text)

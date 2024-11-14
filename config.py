@@ -7,6 +7,8 @@ class PackConfig:
     # 基础配置
     total_packs: int = 10  # 总卡包数
     cards_per_pack: int = 5  # 每包卡片数
+    safety_factor: float = 1.3  # 卡片生成安全系数
+    min_cards_per_rarity: int = 10  # 每种稀有度的最小卡片数
     
     # 稀有度分布配置
     rarity_rates: Dict[str, float] = None
@@ -21,11 +23,11 @@ class PackConfig:
         """初始化默认配置"""
         if self.rarity_rates is None:
             self.rarity_rates = {
-                'R': 0.3,    # 30%
+                'R': 0.4,    # 增加到40%
                 'SR': 0.3,   # 30%
                 'SSR': 0.2,  # 20%
-                'AR': 0.15,  # 15%
-                'BP': 0.05   # 5%
+                'AR': 0.07,  # 7%
+                'BP': 0.03   # 3%
             }
             
         if self.pack_types is None:
