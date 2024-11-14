@@ -27,7 +27,7 @@ class CardDrawGUI:
         self.main_frame = ttk.Frame(self.root, padding="10")
         self.main_frame.grid(row=0, column=0, sticky="nsew")
         self.main_frame.grid_columnconfigure(0, weight=1)
-        self.main_frame.grid_rowconfigure(1, weight=1)  # 让显示区���可扩展
+        self.main_frame.grid_rowconfigure(1, weight=1)  # 让显示区可扩展
         self.main_frame.grid_rowconfigure(2, weight=1)  # 让统计区域可扩展
         
         # 创建按钮区域
@@ -112,7 +112,7 @@ class CardDrawGUI:
         stats_window.title("统计报表")
         stats_window.geometry("800x600")
         
-        # ��建notebook用于切换不同图表
+        # 建notebook用于切换不同图表
         notebook = ttk.Notebook(stats_window)
         notebook.pack(fill='both', expand=True, padx=5, pady=5)
         
@@ -179,8 +179,8 @@ class CardDrawGUI:
         ax = fig.add_subplot(111)
         
         # 准备数据
-        rarities = ['普通', '稀有', '超稀有', '特殊', '限定']  # 修改为中文标签
-        values = [stats[f'{r}_count'] for r in ['R', 'SR', 'SSR', 'AR', 'BP']]
+        rarities = ['R', 'SR', 'SSR', 'AR', 'BP']  # 使用原始配置的稀有度标签
+        values = [stats[f'{r}_count'] for r in rarities]
         colors = ['#CCCCCC', '#99FF99', '#66B2FF', '#FF99FF', '#FFB366']
         
         # 创建柱状图
@@ -301,7 +301,7 @@ class CardDrawGUI:
             messagebox.showerror("错误", f"导出失败：{str(e)}")
 
     def shuffle_packs(self):
-        """打乱卡包顺序"""
+        """打乱卡包���序"""
         remaining = self.system.shuffle_packs()
         messagebox.showinfo("提示", f"已打乱剩余{remaining}个卡包的顺序")
 
