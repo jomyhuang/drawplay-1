@@ -6,11 +6,32 @@ from config import PackConfig
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
+import platform
+import matplotlib.font_manager as fm
 
 
 # 设置中文字体
-plt.rcParams['font.sans-serif'] = ['Noto Sans CJK JP', 'Noto Sans CJK SC', 'SimHei']  # 按优先级设置字体
-plt.rcParams['axes.unicode_minus'] = False
+def setup_chinese_font():
+    system = platform.system()
+    
+    if system == 'Darwin':  # macOS
+        plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'PingFang HK', 'STHeiti', 'Heiti TC']
+    elif system == 'Windows':
+        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'SimHei', 'SimSun']
+    else:  # Linux 或其他系统
+        plt.rcParams['font.sans-serif'] = ['WenQuanYi Micro Hei', 'Droid Sans Fallback']
+    
+    plt.rcParams['axes.unicode_minus'] = False
+    
+    # 验证字体是否可用
+    fonts = [f.name for f in fm.fontManager.ttflist]
+    for font in plt.rcParams['font.sans-serif']:
+        if font in fonts:
+            print(f"成功加载字体: {font}")
+            return True
+    
+    print("警告：未找到合适的中文字体")
+    return False
 
 class CardDrawGUI:
     def __init__(self, root):
@@ -38,6 +59,8 @@ class CardDrawGUI:
         
         # 创建统计区域
         self.create_stats_area()
+        
+        setup_chinese_font()
         
     def create_buttons(self):
         buttons_frame = ttk.Frame(self.main_frame)
