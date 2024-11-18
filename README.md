@@ -174,21 +174,6 @@ python -m unittest tests/test_card_draw.py
 python -m unittest tests.test_card_draw.TestCardDrawSystem.test_draw_pack
 ```
 
-### 测试覆盖率报告
-
-1. 安装覆盖率工具
-```bash
-conda install pytest-cov
-```
-
-2. 生成覆盖率报告
-```bash
-# 生成控制台报告
-pytest --cov=. tests/
-
-# 生成HTML报告
-pytest --cov=. --cov-report=html tests/
-```
 
 ### 主要测试内容
 
