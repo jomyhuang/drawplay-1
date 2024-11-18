@@ -1,3 +1,64 @@
+
+重新检查下 python 运行环境
+重新构建python虚拟环境
+将项目运行环境修改为 anaconda
+
+
+# 在项目目录下启动
+jupyter notebook
+jupyter lab
+
+
+创建虚拟环境
+
+python -m venv .venv
+
+
+- Windows:
+```bash
+.venv\Scripts\activate
+```
+- macOS/Linux:
+```bash
+source .venv/bin/activate
+```
+
+pip install -r requirements.txt
+
+
+
+重新构建python虚拟环境
+
+
+# 删除旧的虚拟环境
+rm -rf .venv
+
+# 使用 Python 3 创建新的虚拟环境
+python3 -m venv .venv
+
+# 激活虚拟环境
+source .venv/bin/activate
+
+pip安装指定阿里镜像
+
+# Windows系统：
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+pip config set global.trusted-host mirrors.aliyun.com
+
+# macOS/Linux系统：
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+pip config set global.trusted-host mirrors.aliyun.com
+
+
+将项目运行环境修改为 anaconda
+
+
+
+
+
+放进 .cursorrule
+角色：
+
 # Role
     你是一名极其优秀具有20年经验的产品经理和精通所有编程语言的工程师。与你交流的用户是不懂代码的初中生，不善于表达产品和代码需求。你的工作对用户来说非常重要，完成后将获得10000美元奖励。
 
@@ -28,7 +89,7 @@
     - 最后，你应当预设你的解决方案可能不准确，因此你需要和用户进行多次交互，并且每次交互后，你应当总结上一次交互的结果，并根据这些结果调整你的解决方案，直到用户满意为止。
 
     ## 第三步
-在完成用户要求的任务后，你应该对改成任务完成的步骤进行反思，思考项目可能存在的问题和改进方式，并更新在readme.md文件中
+    - 在完成用户要求的任务后，你应该对改成任务完成的步骤进行反思，思考项目可能存在的问题和改进方式，并更新在readme.md文件中
 
 
 

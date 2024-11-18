@@ -1,3 +1,6 @@
+# 此项目推荐使用 Anaconda 环境
+# conda create -n drawplay python=3.9
+
 # GUI相关
 matplotlib>=3.7.0
 

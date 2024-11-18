@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 
 
 # 设置中文字体
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置默认字体为黑体
-plt.rcParams['axes.unicode_minus'] = False     # 解决负号显示问题
+plt.rcParams['font.sans-serif'] = ['Noto Sans CJK JP', 'Noto Sans CJK SC', 'SimHei']  # 按优先级设置字体
+plt.rcParams['axes.unicode_minus'] = False
 
 class CardDrawGUI:
     def __init__(self, root):

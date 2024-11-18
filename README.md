@@ -51,13 +51,26 @@
 ## 安装说明
 
 1. 环境要求
-   - Python 3.7+
-   - pip包管理器
+   - Anaconda 或 Miniconda
+   - Python 3.9+
 
-2. 安装依赖
-```bash
-pip install -r requirements.txt
-```
+2. 创建环境
+   ```bash
+   # 创建新环境
+   conda create -n drawplay python=3.9
+   
+   # 激活环境
+   conda activate drawplay
+   ```
+
+3. 安装依赖
+   ```bash
+   # 安装主要依赖
+   conda install matplotlib pandas openpyxl pytest
+   
+   # 安装开发工具
+   conda install black flake8
+   ```
 
 ## 使用说明
 

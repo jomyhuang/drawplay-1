@@ -13,6 +13,9 @@ env/
 
 # 忽略特定文件夹
 fix01/
+role.txt
+note.txt
+
 
 # 忽略特定文件类型
 *.pyc
