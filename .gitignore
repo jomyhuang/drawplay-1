@@ -31,3 +31,6 @@ htmlcov/
 # 数据文件
 *.db
 *.sqlite3
+
+# Jupyter Notebook 临时文件
+notebooks/.ipynb_checkpoints/

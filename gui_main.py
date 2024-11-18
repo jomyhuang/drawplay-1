@@ -6,7 +6,7 @@ from config import PackConfig
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
-import matplotlib as mpl
+
 
 # 设置中文字体
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置默认字体为黑体
@@ -301,7 +301,7 @@ class CardDrawGUI:
             messagebox.showerror("错误", f"导出失败：{str(e)}")
 
     def shuffle_packs(self):
-        """打乱卡包���序"""
+        """打乱卡包序"""
         remaining = self.system.shuffle_packs()
         messagebox.showinfo("提示", f"已打乱剩余{remaining}个卡包的顺序")
 

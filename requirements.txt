@@ -1,6 +1,5 @@
 # GUI相关
 matplotlib>=3.7.0
-tkinter
 
 # 数据处理
 pandas>=2.0.0
