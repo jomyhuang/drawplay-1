@@ -52,6 +52,43 @@ pip config set global.trusted-host mirrors.aliyun.com
 
 将项目运行环境修改为 anaconda
 
+# 创建新的 conda 环境
+conda create -n drawplay python=3.9
+
+# 激活环境
+conda activate drawplay
+
+# 在 .cursor/settings.json 中配置
+{
+    "python.defaultInterpreterPath": "/Users/你的用户名/opt/anaconda3/envs/drawplay/bin/python"
+}
+
+
+使用 Cursor 界面选择
+- 点击左下角的 Python 版本
+- 浏览到项目的 profile
+
+
+在项目根目录创建 .env 文件：
+PYTHONPATH=${workspaceFolder}
+VIRTUAL_ENV=${workspaceFolder}/.venv
+
+
+.cursor/settings.json
+{
+    "python.defaultInterpreterPath": "/opt/anaconda3/bin/python",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}"
+    ],
+    "python.analysis.typeCheckingMode": "basic",
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "files.encoding": "utf8",
+    "terminal.integrated.defaultProfile.osx": "bash",
+    "workbench.colorTheme": "Default Dark+"
+} 
 
 
 

@@ -34,3 +34,6 @@ htmlcov/
 
 # Jupyter Notebook 临时文件
 notebooks/.ipynb_checkpoints/
+
+# 排除个人设置，但保留项目设置
+.cursor/*

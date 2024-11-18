@@ -8,6 +8,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import platform
 import matplotlib.font_manager as fm
+from IPython import get_ipython
+
 
 
 # 设置中文字体
@@ -22,6 +24,10 @@ def setup_chinese_font():
         plt.rcParams['font.sans-serif'] = ['WenQuanYi Micro Hei', 'Droid Sans Fallback']
     
     plt.rcParams['axes.unicode_minus'] = False
+
+    if get_ipython() is not None:
+        get_ipython().run_line_magic('config', "InlineBackend.figure_format = 'retina'")
+
     
     # 验证字体是否可用
     fonts = [f.name for f in fm.fontManager.ttflist]
