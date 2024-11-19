@@ -2,37 +2,37 @@
     // Python解释器设置
     "python.defaultInterpreterPath": "${env:USERPROFILE}/anaconda3/python.exe",
     "python.pythonPath": "${env:USERPROFILE}/anaconda3/python.exe",
-    
     // Anaconda环境路径
     "python.analysis.extraPaths": [
         "${workspaceFolder}",
         "${env:USERPROFILE}/anaconda3/Lib/site-packages"
     ],
-    
     // 终端配置
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
     "terminal.integrated.profiles.windows": {
         "Command Prompt": {
             "path": "C:\\Windows\\System32\\cmd.exe",
-            "args": ["/K", "${env:USERPROFILE}\\anaconda3\\Scripts\\activate.bat"]
+            "args": [
+                "/K",
+                "${env:USERPROFILE}\\anaconda3\\Scripts\\activate.bat"
+            ]
         }
     },
-    
     // 代码质量和格式化设置
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "python.linting.pylintPath": "${env:USERPROFILE}/anaconda3/Scripts/pylint.exe",
     "python.formatting.provider": "black",
     "python.formatting.blackPath": "${env:USERPROFILE}/anaconda3/Scripts/black.exe",
-    
     // 编辑器优化设置
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
-    "editor.rulers": [88],
+    "editor.rulers": [
+        88
+    ],
     "editor.renderWhitespace": "all",
     "files.autoSave": "afterDelay",
     "files.autoSaveDelay": 1000,
-    
     // Jupyter设置
     "jupyter.notebookFileRoot": "${workspaceFolder}",
     "jupyter.askForKernelRestart": false,
