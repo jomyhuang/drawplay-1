@@ -140,4 +140,121 @@ python -m pytest --cov=. tests/
   - 添加GUI和CLI双界面
   - 支持数据导出和统计
 
+## 测试指南
+
+### 测试框架结构
+```
+tests/
+├── __init__.py
+├── test_card_draw.py    # 抽卡系统测试
+├── test_card_pool.py    # 卡池管理测试
+└── test_config.py       # 配置测试
+```
+
+### 运行测试
+
+1. 运行所有测试
+```bash
+# 使用测试脚本
+python run_tests.py
+
+# 或使用 unittest
+python -m unittest discover tests
+```
+
+2. 运行特定测试文件
+```bash
+# 运行抽卡系统测试
+python -m unittest tests/test_card_draw.py
+```
+
+3. 运行特定测试用例
+```bash
+# 运行抽卡测试中的特定方法
+python -m unittest tests.test_card_draw.TestCardDrawSystem.test_draw_pack
+```
+
+
+### 主要测试内容
+
+1. 卡片系统测试
+- 卡片创建与属性验证
+- 稀有度检查
+- 字符串表示测试
+
+2. 抽卡系统测试
+- 初始状态验证
+- 单次抽卡功能
+- 五连抽功能
+- 卡包打乱验证
+- 统计报告生成
+
+3. 卡池管理测试
+- 卡池初始化
+- 剩余卡包统计
+- 卡包分布验证
+
+### 编写新测试
+
+1. 创建测试文件
+```python
+import unittest
+
+class TestYourFeature(unittest.TestCase):
+    def setUp(self):
+        # 测试准备
+        pass
+        
+    def test_your_function(self):
+        # 测试代码
+        self.assertEqual(expected, actual)
+```
+
+2. 测试命名规范
+- 测试文件名：`test_*.py`
+- 测试类名：`Test*`
+- 测试方法名：`test_*`
+
+### 持续集成
+
+本项目支持通过 CI/CD 自动运行测试：
+
+1. 提交代码时自动运行测试
+2. 生成测试覆盖率报告
+3. 测试失败时发送通知
+
+### 常见问题
+
+1. 测试无法发现
+- 确保测试文件名以 `test_` 开头
+- 确保测试类继承 `unittest.TestCase`
+- 确保测试方法名以 `test_` 开头
+
+2. 导入错误
+- 检查 PYTHONPATH 设置
+- 确保在正确的虚拟环境中
+- 检查依赖是否完整安装
+
+3. 测试超时
+- 检查测试中的耗时操作
+- 考虑使用 mock 对象
+- 优化测试逻辑
+
+### 最佳实践
+
+1. 测试原则
+- 每个测试只测试一个功能点
+- 保持测试简单明了
+- 避免测试间的依赖
+
+2. 代码覆盖
+- 保持测试覆盖率在 80% 以上
+- 关注核心功能的测试覆盖
+- 定期检查未覆盖的代码
+
+3. 测试维护
+- 及时更新测试用例
+- 删除过时的测试
+- 保持测试代码整洁
+
 

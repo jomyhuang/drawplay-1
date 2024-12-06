@@ -8,7 +8,7 @@ venv/
 env/
 .venv/
 .env/
-
+.virtual_documents/
 
 # IDE 配置
 .idea/
@@ -37,3 +37,11 @@ notebooks/.ipynb_checkpoints/
 
 # 排除个人设置，但保留项目设置
 .cursor/*
+
+# Conda环境
+.conda/
+anaconda3/
+miniconda3/
+
+# Jupyter
+.ipynb_checkpoints/
